@@ -20,6 +20,7 @@ void displayTest(){
 }
 
 int main(int argc, char *argv[]){
+    // this is a change in the repo
     
     glutInit(&argc, argv);
     glutInitWindowSize(640,500);
