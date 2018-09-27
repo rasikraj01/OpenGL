@@ -1,33 +1,49 @@
-#include <GLUT/GLUT.h>
 #include <iostream>
 
-void displayTest(){
-    glClearColor(1,1,0,0);
-    
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    glBegin(GL_TRIANGLES);
-    
-    glColor3f(0.5,0,0);
-    
-    glVertex2f(300.0,210.0);
-    glVertex2f(340.0,215.0);
-    glVertex2f(320.0,250.0);
-    
-    glEnd();
-    
-    glFlush();
-}
+// GLEW
+#define GLEW_STATIC
+#include <GL/glew.h>
 
-int main(int argc, char *argv[]){
-    // this is a change in the repo
+#include <GLFW/glfw3.h>
+
+const GLint WIDTH=800, HEIGHT=600;
+
+int main(){
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_RESIZABLE , GL_FALSE);
     
-    glutInit(&argc, argv);
-    glutInitWindowSize(640,500);
-    glutInitWindowPosition(1,1);
+    GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "OPENGL", nullptr, nullptr);
     
-    glutCreateWindow("Test");
+    int screenWidth, screenHeight;
+    glfwGetFramebufferSize(window, &screenWidth, &screenHeight);
     
-    glutDisplayFunc(displayTest);
-    glutMainLoop();
+    if(nullptr == window){ // checks if glfw windows has been created or not if not then terminate the porgram/
+        std::cout<< "failed to create window";
+        glfwTerminate();
+        return -1;
+    }
+    glfwMakeContextCurrent(window);
+    glewExperimental = GL_TRUE;
+    
+    if(GLEW_OK != glewInit()){
+        std::cout<<"failed to initialize GLEW"<< std::endl;
+        
+        return -1;
+    }
+    glViewport(0, 0, screenWidth, screenHeight);
+    
+    while(!glfwWindowShouldClose(window)){ // infinte game loop
+        glfwPollEvents();
+        glClearColor(0.3f, 0.5f, 0.2f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        
+        glfwSwapBuffers(window);
+    }
+    glfwTerminate();
+    return 0;
+    
 }
