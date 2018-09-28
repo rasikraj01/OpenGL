@@ -25,9 +25,7 @@ static ShaderSource parseShader(const std::string& filepath){
     std::string line;
     std::stringstream ss[2];
     shaderType type = shaderType::NONE;
-    std::cout<< "runnig";
     while(getline(stream, line)){
-        std::cout<<"looping";
         if (line.find("#shader") != std::string::npos) {
             if(line.find("Vertex") != std::string::npos){
                 type = shaderType::VERTEX;
@@ -124,20 +122,34 @@ int main(void)
     
     
     
-    float positions[6] = {-0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.5f};
-    unsigned int buffer, vao; // added vao variable
+    float positions[] = {
+        -0.5f, -0.5f,
+        0.5f, -0.5f,
+        0.5f, 0.5f,
+        -0.5f, 0.5f,
+    };
+    unsigned int indices[]={
+        0,1,2,
+        2,3,0
+    };
+    unsigned int buffer, vao, ibo; // added vao variable
     
     glGenVertexArrays(1, &vao); // added this function
     glBindVertexArray(vao);
     glEnableVertexAttribArray(0);
     
-    //    GLuint buffer; // same as unsigned int buffer;
+    
     glGenBuffers(1, &buffer); // this generates a buffer and gives the id to the unsigned int buffer
     glBindBuffer(GL_ARRAY_BUFFER, buffer); // selecting that buffer
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);// fill the buffer with data
+    glBufferData(GL_ARRAY_BUFFER, 6* 2 * sizeof(float), positions, GL_STATIC_DRAW);// fill the buffer with data
     
+
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+    
+    glGenBuffers(1, &ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(int), indices, GL_STATIC_DRAW);
     
     ShaderSource source = parseShader("shader/basic.shader");
     
@@ -148,7 +160,9 @@ int main(void)
     {
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        //glDrawArrays(GL_TRIANGLES, 0, 6);
+        
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
         
