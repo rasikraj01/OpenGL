@@ -2,6 +2,8 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <math.h>
+
 // GLEW
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -156,11 +158,18 @@ int main(void)
     unsigned int shader = CreateShader(source.vertexShader, source.fragmentShader);
     glUseProgram(shader);
     /* Loop until the user closes the window */
+    float i= 0.0f;
     while (!glfwWindowShouldClose(window))
     {
+        (i >= 1.0f) ? i= 0.0f : i = i+ 0.001f;
         /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
-        //glDrawArrays(GL_TRIANGLES, 0, 6);
+        glClearColor(0.1f,0.6f,0.4f, 1.0f);
+        
+        float timeValue = glfwGetTime();
+        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+        int vertexColorLocation = glGetUniformLocation(shader, "fragColor");
+        glUseProgram(shader);
+        glUniform4f(vertexColorLocation, i, greenValue, 0.4f, 1.0f);
         
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
         /* Swap front and back buffers */
@@ -168,6 +177,7 @@ int main(void)
         
         /* Poll for and process events */
         glfwPollEvents();
+        
     }
     
     glDeleteProgram(shader);
