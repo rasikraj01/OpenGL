@@ -9,6 +9,8 @@
 #include <GL/glew.h>
 
 #include <GLFW/glfw3.h>
+#include "./src/vertexBuffer.hpp"
+#include "./src/indexBuffer.hpp"
 
 struct ShaderSource{
     std::string vertexShader;
@@ -121,9 +123,6 @@ int main(void)
     
     std::cout<<glGetString(GL_VERSION);
     
-    
-    
-    
     float positions[] = {
         -0.5f, -0.5f,
         0.5f, -0.5f,
@@ -134,35 +133,29 @@ int main(void)
         0,1,2,
         2,3,0
     };
-    unsigned int buffer, vao, ibo; // added vao variable
+    unsigned int vao;
     
-    glGenVertexArrays(1, &vao); // added this function
+    glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     glEnableVertexAttribArray(0);
     
+    VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+    IndexBuffer ib(indices, 6);
+    ib.Bind();
     
-    glGenBuffers(1, &buffer); // this generates a buffer and gives the id to the unsigned int buffer
-    glBindBuffer(GL_ARRAY_BUFFER, buffer); // selecting that buffer
-    glBufferData(GL_ARRAY_BUFFER, 6* 2 * sizeof(float), positions, GL_STATIC_DRAW);// fill the buffer with data
-    
-
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
     
-    glGenBuffers(1, &ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(int), indices, GL_STATIC_DRAW);
     
     ShaderSource source = parseShader("shader/basic.shader");
     
     unsigned int shader = CreateShader(source.vertexShader, source.fragmentShader);
     glUseProgram(shader);
-    /* Loop until the user closes the window */
     float i= 0.0f;
     while (!glfwWindowShouldClose(window))
     {
         (i >= 1.0f) ? i= 0.0f : i = i+ 0.001f;
-        /* Render here */
+        
         glClearColor(0.1f,0.6f,0.4f, 1.0f);
         
         float timeValue = glfwGetTime();
@@ -172,10 +165,8 @@ int main(void)
         glUniform4f(vertexColorLocation, i, greenValue, 0.4f, 1.0f);
         
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-        /* Swap front and back buffers */
         glfwSwapBuffers(window);
         
-        /* Poll for and process events */
         glfwPollEvents();
         
     }
