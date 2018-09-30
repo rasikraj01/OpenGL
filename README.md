@@ -1,6 +1,6 @@
 # OpenGL
 
-A basic OpenGL rendering Engine.
+Basic OpenGL rendering.
 Uses:
 -  GLFW
 -  GLEW
